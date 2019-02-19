@@ -7,24 +7,58 @@
 //
 
 import UIKit
+import NightNight
 
 class searchVC: UIViewController {
 
+    var textSerch = ""
+    var mean = ""
+    
+    @IBOutlet weak var tableview: UITableView!
+    @IBOutlet weak var count: UILabel!
+    
+    var parts = [part]()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.mixedBackgroundColor = MixedColor(normal: 0xfafafa, night: 0x222222)
+        self.navigationItem.title = textSerch
+        
+        tableview.delegate = self
+        tableview.dataSource = self
+        
+        tableview.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0.001))
+        
+        self.count.text = "عدد المرات التي ذكرت فيها الكلمة: \(parts.count) مرة\nتطبيق المرشد لمعاني القران"
+        
+    }
 
-        // Do any additional setup after loading the view.
+}
+
+
+extension searchVC: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return parts.count
+        
     }
-    */
-
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? searchCell {
+            let serch = parts[indexPath.row]
+            cell.configuerCell(search: serch)
+            cell.share = {
+                let activityController = UIActivityViewController(activityItems: ["\(serch.elsoura2 ?? "")\n\(serch.elgoz2 ?? "")\n\(serch.meaning ?? "")"], applicationActivities: nil)
+                self.present(activityController, animated: true, completion: nil)
+            }
+            return cell
+        }else {
+            return searchCell()
+        }
+    }
 }
